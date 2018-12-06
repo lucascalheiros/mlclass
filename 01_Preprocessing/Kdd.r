@@ -1,4 +1,4 @@
-setwd('/home/lucas/Dev/git/mlclass/01_Preprocessing')
+#setwd('/home/lucas/Dev/git/mlclass/01_Preprocessing')
 diaInfo <- read.csv(file = 'diabetes_dataset.csv')
 diaAva <- read.csv(file = 'diabetes_app.csv')
 diaMean <- c()
@@ -9,6 +9,15 @@ diaMean[categ] <- c(mean(diaInfo[which(diaInfo$Outcome == 1),categ],na.rm=TRUE))
 diaNonMean[categ] <- c(mean(diaInfo[which(diaInfo$Outcome == 0),categ],na.rm=TRUE))
 maxValue[categ] = max(diaInfo[,categ],na.rm = TRUE)
 }
+weight <- c()
+weight[1]=2
+weight[2]=2
+weight[3]=1
+weight[4]=1
+weight[5]=1
+weight[6]=2
+weight[7]=0
+weight[8]=6
 
 for(i in 1:572){
   actual <- diaInfo[i,]
@@ -28,8 +37,7 @@ for(i in 1:572){
 
 normalizeData = function(df) {
   for(i in 1:8){
-    df[,i] <- df[,i]/maxValue[i]
-    print("test")
+    df[,i] <- (df[,i]/maxValue[i])*weight[i]
   } 
   return(df)
 }
@@ -37,5 +45,5 @@ normalizeData = function(df) {
 dfAva <- normalizeData(diaAva)
 dfInfo <- normalizeData(diaInfo)
 
-write.csv(dfAva, file = 'Valuator.csv')
-write.csv(dfInfo, file = 'Output.csv')
+write.csv(dfAva[1:8], file = 'Valuator.csv', row.names = FALSE)
+write.csv(dfInfo[1:9], file = 'Output.csv', row.names = FALSE)
