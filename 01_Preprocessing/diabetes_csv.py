@@ -11,7 +11,7 @@ from sklearn.neighbors import KNeighborsClassifier
 import requests
 
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MaxAbsScaler
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import accuracy_score
 
 from sklearn.impute import SimpleImputer
@@ -25,8 +25,7 @@ zero = ['Glucose','BloodPressure','SkinThickness','BMI','Insulin']
 print(' - Criando X e y para o algoritmo de aprendizagem a partir do arquivo diabetes_dataset')
 
 # Caso queira modificar as colunas consideradas basta algera o array a seguir.
-feature_cols = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 
-'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']
+feature_cols = ['Glucose', 'Insulin', 'BMI']
 
 X = data[feature_cols]
 y = data.Outcome
@@ -39,7 +38,7 @@ X_train = imp.fit_transform(X_train)
 X_test = imp.fit_transform(X_test)
 
 #há varios escalares esse pega o maior absoluto
-sc = MaxAbsScaler()
+sc = MinMaxScaler()
 
 X_train = sc.fit_transform(X_train)
 X_test = sc.transform(X_test)
@@ -60,7 +59,7 @@ print(accuracy_score(y_test,y_pred))
 
 data_app = pd.read_csv('/Users/dayvsonsales/mlclass/01_Preprocessing/diabetes_app.csv')
 ##se mudar os atributos, tem que mudar aqui
-#data_app = data_app[feature_cols]
+data_app = data_app[feature_cols]
 data_app = sc.transform(data_app)
 y_pred = neigh.predict(data_app)
 
