@@ -14,15 +14,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MaxAbsScaler
 from sklearn.metrics import accuracy_score
 
+from sklearn.impute import SimpleImputer
+
 print('\n - Lendo o arquivo com o dataset sobre diabetes')
 data = pd.read_csv('/Users/dayvsonsales/mlclass/01_Preprocessing/diabetes_dataset.csv')
 
 zero = ['Glucose','BloodPressure','SkinThickness','BMI','Insulin']
-
-for col in zero:
-    data[col]= data[col].replace(0, np.NaN)
-    mean = int(data[col].mean(skipna=True))
-    data[col] = data[col].replace(np.NaN, mean)
 
 # Criando X and y par ao algorítmo de aprendizagem de máquina.\
 print(' - Criando X e y para o algoritmo de aprendizagem a partir do arquivo diabetes_dataset')
@@ -35,7 +32,11 @@ X = data[feature_cols]
 y = data.Outcome
 
 #se colocar test_size = 0.0001 ele dá 100% mas fica viciado
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.02, random_state = 1)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.223, random_state = 11)
+
+imp = SimpleImputer(missing_values=np.nan, strategy='mean')
+X_train = imp.fit_transform(X_train)
+X_test = imp.fit_transform(X_test)
 
 #há varios escalares esse pega o maior absoluto
 sc = MaxAbsScaler()
@@ -74,7 +75,8 @@ data = {'dev_key':'if\'s',
         'predictions':pd.Series(y_pred).to_json(orient='values')}
 
 # Enviando requisição e salvando o objeto resposta
-#r = requests.post(url = URL, data = data)
+
+r = requests.post(url = URL, data = data)
 
 # Extraindo e imprimindo o texto da resposta
-#print(" - Resposta do servidor:\n", r.text, "\n")
+print(" - Resposta do servidor:\n", r.text, "\n")
