@@ -14,6 +14,9 @@ medianDia1 <- c()
 
 setDia1 <- diaInfo[which(diaInfo$Outcome == 1),]
 setDia0 <- diaInfo[which(diaInfo$Outcome == 0),]
+
+setDia1Fill<-diaFilled[which(diaFilled$Outcome==1),]
+setDia0Fill<-diaFilled[which(diaFilled$Outcome==0),]
 # corDia1 <- c()
 # corDia0 <- c()
 # corDia1 <- cor(setDia1,use="complete.obs")
@@ -40,7 +43,7 @@ fillKnn = function(dataSet, number) {
             dist <- distance(dataSet[row,],dataSet[rowTemp,])
             line <- rowTemp
             pair <- c(line, dist)
-
+            
             if( is.null(bests)||nrow(bests) < number ) {
               bests <- rbind(bests,pair)
             } else {
@@ -64,30 +67,20 @@ fillKnn = function(dataSet, number) {
   return(dataSet)
 }
 
-
-# setDia1Fill10<-fillKnn(setDia1,10)
-# setDia0Fill10<-fillKnn(setDia0,10)
-
-setDia1Fill<-diaFilled[which(diaFilled$Outcome==1),]
-setDia0Fill<-diaFilled[which(diaFilled$Outcome==0),]
-
 randomize = function(dataSet,dataVerif) {
   for(i in 1:nrow(dataSet)){
     for(j in 1:8){
       if(is.na(dataVerif[i,j])) {
         if(dataSet[i,9] == 1) {
-          dataSet[i,j] = rnorm(1, mean = dataSet[i,j], sd = dataSet[i,j]*0.3)
+          dataSet[i,j] = rnorm(1, mean = dataSet[i,j], sd = dataSet[i,j]*0.7)
         } else {
-          dataSet[i,j] = rnorm(1, mean = dataSet[i,j], sd = dataSet[i,j]*0.1)
+          dataSet[i,j] = rnorm(1, mean = dataSet[i,j], sd = dataSet[i,j]*0.7)
         }
       }
     }
   }
   return(dataSet)
 }
-
-test0 = randomize(setDia0Fill, setDia0)
-test1 = randomize(setDia1Fill, setDia1)
 
 for(categ in 1:8){
   meanDia1[categ] <- mean(setDia1[,categ],na.rm = TRUE)
@@ -100,15 +93,29 @@ for(categ in 1:8){
   medianDia0[categ] <- median(setDia0[,categ],na.rm = TRUE)
 }
 removeOutliers = function(dataSet) {
-  dataDia0 <- dataSet[which(dataSet$Outcome==0),]
-  dataDia1 <- dataSet[which(dataSet$Outcome==1),]
-  
-  # dataDia0 <- dataDia0[which(dataDia0$Insulin < 450),]
-  # dataDia1 <- dataDia1[which(dataDia1$Insulin < 500),]
-  
-  
-  dataSet <- rbind(dataDia0,dataDia1)
-  
+  for (row in nrow(dataSet)){
+    if (dataSet[row,9] == 0){
+      if (dataSet[row,2] > 175) {
+        dataSet[row,2] = rnorm(1, mean = meanDia0[2], sd = sdDia0[2])
+      }
+      if (dataSet[row,5] > 400) {
+        dataSet[row,5] = rnorm(1, mean = meanDia0[5], sd = sdDia0[5])
+      }
+      if (dataSet[row,6] > 46) {
+        dataSet[row,6] = rnorm(1, mean = meanDia0[6], sd = sdDia0[6])
+      }
+      if (dataSet[row,8] > 62) {
+        dataSet[row,8] = rnorm(1, mean = meanDia0[8], sd = sdDia0[8])
+      }
+    } else {
+      if (dataSet[row,5] > 350) {
+        dataSet[row,5] = rnorm(1, mean = meanDia1[5], sd = sdDia1[5])
+      }
+      if (dataSet[row,6] > 50) {
+        dataSet[row,6] = rnorm(1, mean = meanDia1[6], sd = sdDia1[6])
+      }
+    }
+  }
   return(dataSet)
 }
 {
@@ -116,24 +123,26 @@ removeOutliers = function(dataSet) {
   weight[1]<-3        #Pregnancies
   weight[2]<-2.7        #Glucose
   weight[3]<-0.5        #BloodPressure
-  weight[4]<-0.4        #SkinThickness
+  weight[4]<-0        #SkinThickness
   weight[5]<-1        #Insulin
-  weight[6]<-3.1       #BMI
+  weight[6]<-2.8       #BMI
   weight[7]<-0        #Pedigree
   weight[8]<-6.3        #Age
+  
+  normalizeData = function(df) {
+    for(i in 1:8){
+      df[,i] <- (df[,i]/maxValue[i])*weight[i]
+    } 
+    return(df)
+  }
 
-normalizeData = function(df) {
-  for(i in 1:8){
-    df[,i] <- (df[,i]/maxValue[i])*weight[i]
-  } 
-  return(df)
-}
-
-dfAva <- normalizeData(diaAva)
-dfInfo <- normalizeData(removeOutliers(diaFilled))
-# dfInfo <- normalizeData(rbind(setDia0Fill10,setDia1Fill10))#normalizeData(diaFilled)
-# dfInfo <- normalizeData(rbind(test0,test1))
-write.csv(dfAva[1:8], file = 'Valuator.csv', row.names = FALSE)
-write.csv(dfInfo[1:9], file = 'Output.csv', row.names = FALSE)
+  test0 = randomize(removeOutliers(setDia0Fill), setDia0)
+  test1 = randomize(removeOutliers(setDia1Fill), setDia1)
+  dfAva <- normalizeData(diaAva)
+  dfInfo <- normalizeData(removeOutliers(diaFilled))
+  # dfInfo <- normalizeData(rbind(setDia0Fill10,setDia1Fill10))#normalizeData(diaFilled)
+  # dfInfo <- normalizeData(rbind(test0,test1))
+  write.csv(dfAva[1:8], file = 'Valuator.csv', row.names = FALSE)
+  write.csv(dfInfo[1:9], file = 'Output.csv', row.names = FALSE)
 }
 
