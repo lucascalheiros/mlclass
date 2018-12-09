@@ -1,7 +1,7 @@
 # A ideia desse código é encontrar o nível de correlação da feature age com as demais
 
 # Coloquem o diretorio que possui o dataset no seu computador.
-setwd("/home/johnomena/mlclass/01_Preprocessing")
+setwd('/home/lucas/Dev/git/mlclass-private/01_Preprocessing')
 
 # Lendo o dataset em um dataframe
 diabetsData <- read.csv("diabetes_dataset.csv")
