@@ -12,6 +12,7 @@ no servidor.
 import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
 import requests
+import numpy as np
 
 print('\n - Lendo o arquivo com o dataset sobre diabetes')
 data = pd.read_csv('Output.csv')
