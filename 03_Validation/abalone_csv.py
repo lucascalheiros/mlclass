@@ -65,7 +65,7 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_
 
 # %% testing and evaluating weights
 gen_alg = Genetic(x_train, y_train, x_test, y_test)
-pop = gen_alg.genAlg(100,20)
+pop = gen_alg.genAlg(100,50)
 
 # %% applying weights and knn model on data
 x = weight(weights, x)
@@ -83,4 +83,3 @@ r = requests.post(url = URL, data = data)
 
 pastebin_url = r.text
 print(" - Resposta do servidor:\n", r.text, "\n")
-

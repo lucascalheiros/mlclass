@@ -41,17 +41,17 @@ class Genetic:
     
     def breed(self, parent1, parent2):
         children = [[0 for y in range(11)] for x in range(2)]
-        for i in range(6):
+        for i in range(10):
             if(random.random()>50):
                 children[0][i]=parent1[i]
                 children[1][i]=parent2[i]
             else:
                 children[1][i]=parent1[i]
                 children[0][i]=parent2[i]
-            if(random.random()>0.80):
-                children[0][i]=random.randint(1,50)
-            if(random.random()<0.20):
-                children[1][i]=random.randint(1,50)
+            if(random.random()>0.85):
+                children[0][i]=random.randint(0,50)
+            if(random.random()<0.15):
+                children[1][i]=random.randint(0,50)
         return children
 
     def breeding(self, selected, limit=100):
@@ -81,7 +81,7 @@ class Genetic:
     
         
     def genAlg(self, nPop, nGen):
-        pop = [[random.randint(1,50) for y in range(11)] for x in range(nPop)]
+        pop = [[random.randint(0,50) for y in range(11)] for x in range(nPop)]
 
         for i in range(nGen):
             print(" GEN: ",i )
